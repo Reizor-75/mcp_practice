@@ -1,5 +1,22 @@
 {
+  "name":"mcp-server-and-client",
+  "version": "1.0.0",
+  "scripts": {
+    "server:build": "tsc",
+    "server:build:watch":"tsc --watch",
+    "server:dev": "tsx ser/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license":"ISC",
+  "description": "",
+  
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.20.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.9.0",
+    "typescript": "^5.9.3"
   }
 }
+
