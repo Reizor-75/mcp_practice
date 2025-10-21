@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "email": "JD@test.com",
+        "address": "123 main st, Springfeild, IL",
+        "phone": "555-1234"
+    },
+    {
+        "id": 2,
+        "name": "Freddy Kruger",
+        "email": "FKruger@test.com",
+        "address": "1428 Elm Street Springwood, OhOH",
+        "phone": "555-1234"
+    },
+    {
+        "id": 3,
+        "name": "Michael Meyers",
+        "email": "MichaelM@test.com",
+        "address": "1000 Mission Street Los Angeles, CA",
+        "phone": "555-1234"
+    },
+    {
+        "id": 4,
+        "name": "Norman Bates",
+        "email": "NBates@batesMotel.com",
+        "address": "4019 Highway 88 White Pine Bay, OR",
+        "phone": "123-2345"
+    }
+]

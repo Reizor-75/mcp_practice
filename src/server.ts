@@ -13,7 +13,6 @@ const server = new McpServer({
   },
 })
 
-
 server.tool("create-user", "Create a new user in the database", {
     name: z.string(),
     email: z.string(),
@@ -51,12 +50,13 @@ async function createUser(user : {
   phone: string
   }){
   const users = await import("./data/users.json", {
-    with: { type: "json"}
+    with: { type: "json" },
   }).then(m => m.default)
 
   const id = users.length + 1
 
-  users.push({id, ...user})
+  console.log(user)
+  users.push({ id, ...user })
 
   await fs.writeFile("./src/data/users.json", JSON.stringify(users, null, 2))
 
