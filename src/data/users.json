@@ -47,5 +47,18 @@
     "email": "abigail.williams@email.com",
     "address": "456 Oak Avenue, Boston, MA 02108",
     "phone": "617-555-0198"
+  },
+  {
+    "id": 8,
+    "name": "Evelyn Turner",
+    "email": "evelyn.turner@example.com",
+    "phone": "+1-503-555-0123",
+    "address": {
+      "street": "482 Maplewood Lane",
+      "city": "Portland",
+      "state": "OR",
+      "zip": "97214",
+      "country": "USA"
+    }
   }
 ]
