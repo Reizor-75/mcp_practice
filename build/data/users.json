@@ -26,5 +26,26 @@
         "email": "NBates@batesMotel.com",
         "address": "4019 Highway 88 White Pine Bay, OR",
         "phone": "123-2345"
+    },
+    {
+        "id": 5,
+        "name": "Test",
+        "email": "test@test",
+        "address": "1234",
+        "phone": "1234"
+    },
+    {
+        "id": 6,
+        "name": "Test User",
+        "email": "test.user@example.com",
+        "address": "123 Test St",
+        "phone": "555-0100"
+    },
+    {
+        "id": 7,
+        "name": "Abigail Williams",
+        "email": "abigail.williams@email.com",
+        "address": "456 Oak Avenue, Boston, MA 02108",
+        "phone": "617-555-0198"
     }
 ]

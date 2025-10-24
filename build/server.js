@@ -16,6 +16,52 @@ const server = new mcp_js_1.McpServer({
         prompts: {},
     },
 });
+server.resource("users", "users://all", {
+    description: "get all user's data from the database",
+    title: "users",
+    mimeType: "application/json"
+}, async (uri) => {
+    const users = await import("./data/users.json", {
+        with: { type: "json" },
+    }).then(m => m.default);
+    return {
+        contents: [
+            {
+                uri: uri.href,
+                text: JSON.stringify(users),
+                mimeType: "application/json"
+            }
+        ]
+    };
+});
+server.resource("user-detail", new mcp_js_1.ResourceTemplate("users://{userId}/profile", { list: undefined }), {
+    description: "get a user's data from the database",
+    title: "User Detail",
+    mimeType: "application/json"
+}, async (uri, { userId }) => {
+    const users = await import("./data/users.json", {
+        with: { type: "json" },
+    }).then(m => m.default);
+    const user = users.find(u => u.id == parseInt(userId));
+    if (user == null) {
+        return {
+            contents: [{
+                    uri: uri.href,
+                    text: JSON.stringify({ error: "User not found" }),
+                    mimeType: "application/json"
+                }]
+        };
+    }
+    return {
+        contents: [
+            {
+                uri: uri.href,
+                text: JSON.stringify(user),
+                mimeType: "application/json"
+            }
+        ]
+    };
+});
 server.tool("create-user", "Create a new user in the database", {
     name: zod_1.z.string(),
     email: zod_1.z.string(),
@@ -44,6 +90,21 @@ server.tool("create-user", "Create a new user in the database", {
             ]
         };
     }
+});
+server.prompt("generate-fake-user", "Generate a fake user based on a given name", {
+    name: zod_1.z.string(),
+}, ({ name }) => {
+    return {
+        messages: [
+            {
+                role: "user",
+                content: {
+                    type: "text",
+                    text: `Generate a fake user with the name ${name}. The user should have a realistic email, address, and phone number.`,
+                }
+            }
+        ]
+    };
 });
 async function createUser(user) {
     const users = await import("./data/users.json", {

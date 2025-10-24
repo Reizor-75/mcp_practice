@@ -40,5 +40,12 @@
     "email": "test.user@example.com",
     "address": "123 Test St",
     "phone": "555-0100"
+  },
+  {
+    "id": 7,
+    "name": "Abigail Williams",
+    "email": "abigail.williams@email.com",
+    "address": "456 Oak Avenue, Boston, MA 02108",
+    "phone": "617-555-0198"
   }
 ]
