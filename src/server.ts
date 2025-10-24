@@ -1,9 +1,7 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod"
 import fs from "node:fs/promises"
-import { title } from "node:process";
-import { mime } from "zod/v4";
 
 const server = new McpServer({
   name: "test",
@@ -32,7 +30,42 @@ server.resource(
         {
           uri: uri.href, 
           text: JSON.stringify(users), 
-          mimeType: "applications/json"
+          mimeType: "application/json"
+        }
+      ]
+    }
+  }
+)
+
+server.resource(
+  "user-detail",
+  new ResourceTemplate("users://{userId}/profile", {list: undefined}),
+  { 
+    description:"get a user's data from the database", 
+    title: "User Detail",
+    mimeType: "application/json"
+  },
+  async (uri, {userId}) => {
+    const users = await import("./data/users.json", {
+        with: { type: "json" },
+      }).then(m => m.default)
+
+    const user = users.find(u=>u.id == parseInt(userId as string)) 
+    if(user == null){
+      return {
+        contents: [{
+          uri: uri.href, 
+          text: JSON.stringify({error:"User not found"}), 
+          mimeType: "application/json"
+        }]
+      }
+    }
+    return{
+      contents: [
+        {
+          uri: uri.href, 
+          text: JSON.stringify(user), 
+          mimeType: "application/json"
         }
       ]
     }
