@@ -60,5 +60,19 @@
       "zip": "97214",
       "country": "USA"
     }
+  },
+  {
+    "id": 9,
+    "firstName": "Ava",
+    "lastName": "Harrison",
+    "email": "ava.harrison@example.com",
+    "phone": "+1-415-555-0198",
+    "address": {
+      "street": "492 Willow Creek Ave",
+      "city": "San Francisco",
+      "state": "CA",
+      "postalCode": "94107",
+      "country": "USA"
+    }
   }
 ]
