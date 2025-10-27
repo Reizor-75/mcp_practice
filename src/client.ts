@@ -1,27 +1,49 @@
+import { confirm, input, select} from "@inquirer/prompts"
 import { Client } from "@modelcontextprotocol/sdk/client";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 
 const mcp = new Client({
-  name : "text-client-video", 
+  name: "text-client-video",
   version: "1.0.0",
-},{
-  capabilities:{sampling: {}}
+}, {
+  capabilities: { sampling: {} }
 })
 
 const transport = new StdioClientTransport({
-  command:"node",
-  args:["build/server.js"],
-  stderr:"ignore",
+  command: "node",
+  args: ["build/server.js"],
+  stderr: "ignore",
 })
 
-async function main(){
+async function main() {
   await mcp.connect(transport)
-  const [{tools}, {prompts}, {resources}, {resourceTemplates}]= await Promise.all([
+  const [{ tools }, { prompts }, { resources }, { resourceTemplates }] = await Promise.all([
     mcp.listTools(),
     mcp.listPrompts(),
     mcp.listResources(),
     mcp.listResourceTemplates(),
   ])
+
+  console.log("You are conne!cted")
+
+  while (true) {
+    const option = await select({
+      message: "What would you like to do?",
+      choices: ["Query", "Tools", "Resources", "Prompts"],
+    })
+    switch (option) {
+      case "Tools":
+        const toolName = await select({
+          message: "Select a tool",
+          choices: tools.map(tool => ({
+            name: tool.annotations?.title || tool.name,
+            value: tool.name,
+            description: tool.description,
+          })),
+        })
+        console.log(toolName)
+    }
+  }
 }
 
 main()
