@@ -7,6 +7,7 @@ const mcp_js_1 = require("@modelcontextprotocol/sdk/server/mcp.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
 const zod_1 = require("zod");
 const promises_1 = __importDefault(require("node:fs/promises"));
+const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
 const server = new mcp_js_1.McpServer({
     name: "test",
     version: "1.0.0",
@@ -91,6 +92,54 @@ server.tool("create-user", "Create a new user in the database", {
         };
     }
 });
+server.tool("create-random-user", "Create a random user with fake data", {
+    title: "Create Random User",
+    readOnlyHint: false,
+    destructiveHint: false,
+    idempotentHint: false,
+    openWorldHint: true
+}, async () => {
+    const res = await server.server.request({
+        method: "sampling/createMessage",
+        params: {
+            messages: [{
+                    role: "user",
+                    content: {
+                        type: "text",
+                        text: "Generate a fake user with a realistic name, email, address, and phone number. Return this data as a JSON object with no other text or formatter so it can be used with Json.parse",
+                    }
+                }],
+            maxTokens: 1024,
+        },
+    }, types_js_1.CreateMessageResultSchema);
+    if (res.content.type !== "text") {
+        return {
+            content: [{
+                    type: "text",
+                    text: "Failed to generate user data"
+                }],
+        };
+    }
+    try {
+        const fakeUser = JSON.parse(res.content.text
+            .trim()
+            .replace(/^```json/, "")
+            .replace(/```$/, "")
+            .trim());
+        const id = await createUser(fakeUser);
+        return {
+            content: [{
+                    type: "text",
+                    text: `User ${id} created successfully`
+                }],
+        };
+    }
+    catch {
+        return {
+            content: [{ type: "text", text: "Failed to generate user data" }],
+        };
+    }
+});
 server.prompt("generate-fake-user", "Generate a fake user based on a given name", {
     name: zod_1.z.string(),
 }, ({ name }) => {
@@ -111,7 +160,6 @@ async function createUser(user) {
         with: { type: "json" },
     }).then(m => m.default);
     const id = users.length + 1;
-    console.log(user);
     users.push({ id, ...user });
     await promises_1.default.writeFile("./src/data/users.json", JSON.stringify(users, null, 2));
     return id;

@@ -29,23 +29,36 @@
     },
     {
         "id": 5,
-        "name": "Test",
-        "email": "test@test",
-        "address": "1234",
-        "phone": "1234"
-    },
-    {
-        "id": 6,
-        "name": "Test User",
-        "email": "test.user@example.com",
-        "address": "123 Test St",
-        "phone": "555-0100"
-    },
-    {
-        "id": 7,
         "name": "Abigail Williams",
         "email": "abigail.williams@email.com",
         "address": "456 Oak Avenue, Boston, MA 02108",
         "phone": "617-555-0198"
+    },
+    {
+        "id": 6,
+        "name": "Evelyn Turner",
+        "email": "evelyn.turner@example.com",
+        "phone": "+1-503-555-0123",
+        "address": {
+            "street": "482 Maplewood Lane",
+            "city": "Portland",
+            "state": "OR",
+            "zip": "97214",
+            "country": "USA"
+        }
+    },
+    {
+        "id": 7,
+        "firstName": "Evelyn",
+        "lastName": "Marquez",
+        "email": "evelyn.marquez@example.com",
+        "address": {
+            "street": "2190 Cedar Lane",
+            "city": "Riverton",
+            "state": "CA",
+            "postalCode": "90265",
+            "country": "USA"
+        },
+        "phone": "+1-555-0134"
     }
 ]

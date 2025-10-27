@@ -8,9 +8,9 @@ import { json } from "node:stream/consumers";
 const server = new McpServer({
   name: "test",
   version: "1.0.0",
-  capabilites: {    
-    resources:{},
-    tools:{},
+  capabilites: {
+    resources: {},
+    tools: {},
     prompts: {},
   },
 })
@@ -19,19 +19,19 @@ server.resource(
   "users",
   "users://all",
   {
-    description:"get all user's data from the database", 
+    description: "get all user's data from the database",
     title: "users",
     mimeType: "application/json"
-  }, async uri =>{
+  }, async uri => {
     const users = await import("./data/users.json", {
       with: { type: "json" },
     }).then(m => m.default)
 
-    return{
+    return {
       contents: [
         {
-          uri: uri.href, 
-          text: JSON.stringify(users), 
+          uri: uri.href,
+          text: JSON.stringify(users),
           mimeType: "application/json"
         }
       ]
@@ -41,32 +41,32 @@ server.resource(
 
 server.resource(
   "user-detail",
-  new ResourceTemplate("users://{userId}/profile", {list: undefined}),
-  { 
-    description:"get a user's data from the database", 
+  new ResourceTemplate("users://{userId}/profile", { list: undefined }),
+  {
+    description: "get a user's data from the database",
     title: "User Detail",
     mimeType: "application/json"
   },
-  async (uri, {userId}) => {
+  async (uri, { userId }) => {
     const users = await import("./data/users.json", {
-        with: { type: "json" },
-      }).then(m => m.default)
+      with: { type: "json" },
+    }).then(m => m.default)
 
-    const user = users.find(u=>u.id == parseInt(userId as string)) 
-    if(user == null){
+    const user = users.find(u => u.id == parseInt(userId as string))
+    if (user == null) {
       return {
         contents: [{
-          uri: uri.href, 
-          text: JSON.stringify({error:"User not found"}), 
+          uri: uri.href,
+          text: JSON.stringify({ error: "User not found" }),
           mimeType: "application/json"
         }]
       }
     }
-    return{
+    return {
       contents: [
         {
-          uri: uri.href, 
-          text: JSON.stringify(user), 
+          uri: uri.href,
+          text: JSON.stringify(user),
           mimeType: "application/json"
         }
       ]
@@ -75,104 +75,105 @@ server.resource(
 )
 
 server.tool("create-user", "Create a new user in the database", {
-    name: z.string(),
-    email: z.string(),
-    address: z.string(),
-    phone: z.string()
-  },{ 
-      //optional
-      title:"Create User",
-      readOnlyHint: false,
-      destructiveHint: false,
-      idempotentHint: false,
-      openWorldHint: true
-  }, async (params) => {
-    try {
-      const id =  await createUser(params)
-
-      return{
-        content: [
-          {type: "text", text: `User ${id} created successfully`}
-        ]
-      }       
-    } catch {
-        return{
-          content: [
-            {type: "text", text: "Failed to save user"}
-          ]
-        }
+  name: z.string(),
+  email: z.string(),
+  address: z.string(),
+  phone: z.string()
+}, {
+  //optional
+  title: "Create User",
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: false,
+  openWorldHint: true
+}, async (params) => {
+  try {
+    const id = await createUser(params)
+    return {
+      content: [
+        { type: "text", text: `User ${id} created successfully` }
+      ]
     }
+  } catch {
+    return {
+      content: [
+        { type: "text", text: "Failed to save user" }
+      ]
+    }
+  }
 })
 
 server.tool(
-  "create-random-user", 
-  "Create a random user with fake data", 
+  "create-random-user",
+  "Create a random user with fake data",
   {
-    title:"Create Random User",
+    title: "Create Random User",
     readOnlyHint: false,
     destructiveHint: false,
     idempotentHint: false,
     openWorldHint: true
-  }, 
+  },
   async () => {
     const res = await server.server.request({
-      method:"sampling/createMessage",
-      params:{
-        messages:[{
+      method: "sampling/createMessage",
+      params: {
+        messages: [{
           role: "user",
-          content:{
+          content: {
             type: "text",
-            text:"Generate a fake user with a realistic name, email, address, and phone number. Return this data as a JSON object with no other text or formatter so it can be used with Json.parse",
+            text: "Generate a fake user with a realistic name, email, address, and phone number. Return this data as a JSON object with no other text or formatter so it can be used with Json.parse",
           }
         }],
         maxTokens: 1024,
       },
-    }, 
-    CreateMessageResultSchema
-  )
-  if(res.content.type !== "text"){
-    return {
-      content: [{
-        type: "text",
-        text: "Failed to generate user data"}],
-    }
-  }
-
-  try {
-    const fakeUser = JSON.parse(
-      res.content.text
-        .trim()
-        .replace(/^```json/,"")
-        .replace(/```$/,"")
-        .trim()
+    },
+      CreateMessageResultSchema
     )
-
-    const id = await createUser(fakeUser)  
-    
-    return {
-      content: [{
-        type: "text",
-        text: `User ${id} created successfully`}],
-    }
-  } catch {
+    if (res.content.type !== "text") {
       return {
-        content: [{ type: "text", text: "Failed to generate user data"}],
+        content: [{
+          type: "text",
+          text: "Failed to generate user data"
+        }],
+      }
     }
-  }
-})
+
+    try {
+      const fakeUser = JSON.parse(
+        res.content.text
+          .trim()
+          .replace(/^```json/, "")
+          .replace(/```$/, "")
+          .trim()
+      )
+
+      const id = await createUser(fakeUser)
+
+      return {
+        content: [{
+          type: "text",
+          text: `User ${id} created successfully`
+        }],
+      }
+    } catch {
+      return {
+        content: [{ type: "text", text: "Failed to generate user data" }],
+      }
+    }
+  })
 
 server.prompt(
   "generate-fake-user"
-  ,"Generate a fake user based on a given name",{
-    name: z.string(),
-  },
-  ({name}) =>{
+  , "Generate a fake user based on a given name", {
+  name: z.string(),
+},
+  ({ name }) => {
     return {
       messages: [
         {
           role: "user",
-          content:{
-            type:"text",
+          content: {
+            type: "text",
             text: `Generate a fake user with the name ${name}. The user should have a realistic email, address, and phone number.`,
 
           }
@@ -180,22 +181,21 @@ server.prompt(
       ]
     }
   }
-  
+
 )
 
-async function createUser(user : {
+async function createUser(user: {
   name: string,
-  email: string,  
+  email: string,
   address: string,
   phone: string
-  }){
+}) {
   const users = await import("./data/users.json", {
     with: { type: "json" },
   }).then(m => m.default)
 
   const id = users.length + 1
 
-  console.log(user)
   users.push({ id, ...user })
 
   await fs.writeFile("./src/data/users.json", JSON.stringify(users, null, 2))
@@ -203,9 +203,9 @@ async function createUser(user : {
   return id
 }
 
-async function main(){
-    const transport = new StdioServerTransport()
-    await server.connect(transport) 
+async function main() {
+  const transport = new StdioServerTransport()
+  await server.connect(transport)
 }
 
 main()
